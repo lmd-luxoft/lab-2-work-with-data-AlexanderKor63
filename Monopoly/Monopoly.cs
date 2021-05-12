@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Monopoly
+namespace nspMonopoly
 {
     struct Cell    {
         internal string Item1;           // Название компании
@@ -10,10 +10,10 @@ namespace Monopoly
         internal int Item3;              // Владелец
         internal bool Item4;             // Поле про запас
 
-        internal Cell(string name, MonopolyType type, int cash, bool flag)        {
+        internal Cell(string name, MonopolyType type, int player, bool flag)        {
             Item1 = name;
             Item2 = type;
-            Item3 = cash;
+            Item3 = player;
             Item4 = flag;
         }
     }
@@ -45,7 +45,20 @@ namespace Monopoly
         private const int sell = 500;
         private const int rent = sell / 2;
     }
+
     class Monopoly_FOOD : MonopolySell {
+        internal override void FindRent(ref Player o, ref Player z) {
+            z = new Player(z.Item1, z.Item2 - rent);
+            o = new Player(o.Item1, o.Item2 + rent);
+        }
+        internal override void FindCash(List<Player> players, int v, Cell k, Player x) {
+            if (k.Item3 == 0) players[v-1] = new Player(x.Item1, x.Item2 - sell);
+        }
+        private const int sell = 250;
+        private const int rent = sell / 2;
+    }
+
+    class Monopoly_CLOTHER : MonopolySell {
         internal override void FindRent(ref Player o, ref Player z) {
             z = new Player(z.Item1, z.Item2 - rent);
             o = new Player(o.Item1, o.Item2 + rent);
@@ -53,10 +66,11 @@ namespace Monopoly
         internal override void FindCash(List<Player> players, int v, Cell k, Player x) {
             if (k.Item3 == 0) players[v - 1] = new Player(x.Item1, x.Item2 - sell);
         }
-        private const int sell = 250;
+        private const int sell = 400;
         private const int rent = sell / 2;
     }
-    class Monopoly_CLOTHER : MonopolySell {
+
+    class Monopoly_TRAVEL : MonopolySell {
         internal override void FindRent(ref Player o, ref Player z) {
             z = new Player(z.Item1, z.Item2 - rent);
             o = new Player(o.Item1, o.Item2 + rent);
@@ -67,17 +81,7 @@ namespace Monopoly
         private const int sell = 800;
         private const int rent = sell / 2;
     }
-    class Monopoly_TRAVEL : MonopolySell {
-        internal override void FindRent(ref Player o, ref Player z) {
-            z = new Player(z.Item1, z.Item2 - rent);
-            o = new Player(o.Item1, o.Item2 + rent);
-        }
-        internal override void FindCash(List<Player> players, int v, Cell k, Player x) {
-            if (k.Item3 == 0) players[v - 1] = new Player(x.Item1, x.Item2 - sell);
-        }
-        private const int sell = 100;
-        private const int rent = sell / 2;
-    }
+
     class Monopoly_PRISON : MonopolyNotSell {
         internal override void FindRent(ref Player o, ref Player z) {
             z = new Player(z.Item1, z.Item2 - rent);
@@ -95,7 +99,7 @@ namespace Monopoly
     {
         internal const int startCash = 6000;
         private List<Player> players = new List<Player>();
-        private List<Cell> fields = new List<Cell>();
+        private List<Cell>   fields  = new List<Cell>();
 
         public Monopoly(string[] p)
         {
@@ -103,14 +107,14 @@ namespace Monopoly
             {
                 players.Add(new Player(p[i], startCash));     
             }
-            fields.Add(new Cell("Ford",     new Monopoly_AUTO(), 0, false));
+            fields.Add(new Cell("Ford", new Monopoly_AUTO(), 0, false));
             fields.Add(new Cell("MCDonald", new Monopoly_FOOD(), 0, false));
-            fields.Add(new Cell("Lamoda",   new Monopoly_CLOTHER(), 0, false));
+            fields.Add(new Cell("Lamoda", new Monopoly_CLOTHER(), 0, false));
             fields.Add(new Cell("Air Baltic", new Monopoly_TRAVEL(), 0, false));
             fields.Add(new Cell("Nordavia", new Monopoly_TRAVEL(), 0, false));
-            fields.Add(new Cell("Prison",   new Monopoly_PRISON(), 0, false));
+            fields.Add(new Cell("Prison", new Monopoly_PRISON(), 0, false));
             fields.Add(new Cell("MCDonald", new Monopoly_FOOD(), 0, false));
-            fields.Add(new Cell("TESLA",    new Monopoly_AUTO(), 0, false));
+            fields.Add(new Cell("TESLA", new Monopoly_AUTO(), 0, false));
         }
 
         internal List<Player> GetPlayersList()      { return players;}
