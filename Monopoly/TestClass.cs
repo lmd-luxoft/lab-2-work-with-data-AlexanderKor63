@@ -16,11 +16,11 @@ namespace Monopoly
             string[] players = new string[]{ "Peter","Ekaterina","Alexander" };
             Tuple<string, int>[] expectedPlayers = new Tuple<string, int>[]
             {
-                new Tuple<string, int>("Peter",6000),
-                new Tuple<string, int>("Ekaterina",6000),
-                new Tuple<string, int>("Alexander",6000)
+                new Tuple<string, int>("Peter",Monopoly.startCash),
+                new Tuple<string, int>("Ekaterina",Monopoly.startCash),
+                new Tuple<string, int>("Alexander",Monopoly.startCash)
             };
-            Monopoly monopoly = new Monopoly(players,3);
+            Monopoly monopoly = new Monopoly(players);
             Tuple<string, int>[] actualPlayers = monopoly.GetPlayersList().ToArray();
 
             Assert.AreEqual(expectedPlayers, actualPlayers);
@@ -40,7 +40,7 @@ namespace Monopoly
                 new Tuple<string, Monopoly.Type, int, bool>("TESLA",Monopoly.Type.AUTO,0,false)
             };
             string[] players = new string[] { "Peter", "Ekaterina", "Alexander" };
-            Monopoly monopoly = new Monopoly(players, 3);
+            Monopoly monopoly = new Monopoly(players);
             Tuple<string, Monopoly.Type, int, bool>[] actualCompanies = monopoly.GetFieldsList().ToArray();
             Assert.AreEqual(expectedCompanies, actualCompanies);
         }
@@ -48,7 +48,7 @@ namespace Monopoly
         public void PlayerBuyNoOwnedCompanies()
         {
             string[] players = new string[] { "Peter", "Ekaterina", "Alexander" };
-            Monopoly monopoly = new Monopoly(players, 3);
+            Monopoly monopoly = new Monopoly(players);
             Tuple<string, Monopoly.Type, int, bool> x = monopoly.GetFieldByName("Ford");
             monopoly.Buy(1, x);
             Tuple<string,int> actualPlayer = monopoly.GetPlayerInfo(1);
@@ -61,7 +61,7 @@ namespace Monopoly
         public void RentaShouldBeCorrectTransferMoney()
         {
             string[] players = new string[] { "Peter", "Ekaterina", "Alexander" };
-            Monopoly monopoly = new Monopoly(players, 3);
+            Monopoly monopoly = new Monopoly(players);
             Tuple<string, Monopoly.Type, int, bool>  x = monopoly.GetFieldByName("Ford");
             monopoly.Buy(1, x);
             x = monopoly.GetFieldByName("Ford");

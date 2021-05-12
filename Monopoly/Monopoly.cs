@@ -6,15 +6,29 @@ using System.Threading.Tasks;
 
 namespace Monopoly
 {
+    //abstract class MonopolyType {
+    //    internal abstract bool Buy(int v, Tuple<string, Type, int, bool> k);
+    //    internal abstract bool Renta(int v, Tuple<string, Type, int, bool> k);
+    //}
+    //class Monopoly_AUTO : MonopolyType
+    //{
+    //    internal override bool Buy(int v, Tuple<string, Type, int, bool> k)        {
+    //        throw new NotImplementedException();
+    //    }
+    //    internal override bool Renta(int v, Tuple<string, Type, int, bool> k)        {
+    //        throw new NotImplementedException();
+    //    }
+    //}
+
     class Monopoly
     {
-        private const int startCash = 6000;
+        internal const int startCash = 6000;
 
         public List<Tuple<string, int>> players = new List<Tuple<string, int>>();
         public List<Tuple<string, Monopoly.Type, int, bool>> fields = new List<Tuple<string, Type, int, bool>>();
-        public Monopoly(string[] p, int v)
+        public Monopoly(string[] p)
         {
-            for (int i = 0; i < v; i++)
+            for (int i = 0; i < p.Length; i++)
             {
                 players.Add(new Tuple<string,int>(p[i], startCash));     
             }
@@ -52,40 +66,44 @@ namespace Monopoly
         {
             return (from p in fields where p.Item1 == v select p).FirstOrDefault();
         }
-
+        internal void FindCash(int v, Tuple<string, Type, int, bool> k, Tuple<string, int> x)
+        {
+            int cash = 0;
+            switch(k.Item2)
+                        {
+                            case Type.AUTO:
+                                if (k.Item3 != 0)
+                                    return;
+                                cash = x.Item2 - 500;
+                                players[v - 1] = new Tuple<string, int>(x.Item1, cash);
+                                break;
+                            case Type.FOOD:
+                                if (k.Item3 != 0)
+                                    return;
+                                cash = x.Item2 - 250;
+                                players[v - 1] = new Tuple<string, int>(x.Item1, cash);
+                                break;
+                            case Type.TRAVEL:
+                                if (k.Item3 != 0)
+                                    return;
+                                cash = x.Item2 - 700;
+                                players[v - 1] = new Tuple<string, int>(x.Item1, cash);
+                                break;
+                            case Type.CLOTHER:
+                                if (k.Item3 != 0)
+                                    return;
+                                cash = x.Item2 - 100;
+                                players[v - 1] = new Tuple<string, int>(x.Item1, cash);
+                                break;
+                            default:
+                                return;
+                        }
+        }
         internal bool Buy(int v, Tuple<string, Type, int, bool> k)
         {
             var x = GetPlayerInfo(v);
-            int cash = 0;
-            switch(k.Item2)
-            {
-                case Type.AUTO:
-                    if (k.Item3 != 0)
-                        return false;
-                    cash = x.Item2 - 500;
-                    players[v - 1] = new Tuple<string, int>(x.Item1, cash);
-                    break;
-                case Type.FOOD:
-                    if (k.Item3 != 0)
-                        return false;
-                    cash = x.Item2 - 250;
-                    players[v - 1] = new Tuple<string, int>(x.Item1, cash);
-                    break;
-                case Type.TRAVEL:
-                    if (k.Item3 != 0)
-                        return false;
-                    cash = x.Item2 - 700;
-                    players[v - 1] = new Tuple<string, int>(x.Item1, cash);
-                    break;
-                case Type.CLOTHER:
-                    if (k.Item3 != 0)
-                        return false;
-                    cash = x.Item2 - 100;
-                    players[v - 1] = new Tuple<string, int>(x.Item1, cash);
-                    break;
-                default:
-                    return false;
-            }
+            FindCash(v,k,x);
+            
             int i = players.Select((item, index) => new { name = item.Item1, index = index })
                 .Where(n => n.name == x.Item1)
                 .Select(p => p.index).FirstOrDefault();
