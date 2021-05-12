@@ -8,13 +8,15 @@ namespace Monopoly
 {
     class Monopoly
     {
+        private const int startCash = 6000;
+
         public List<Tuple<string, int>> players = new List<Tuple<string, int>>();
         public List<Tuple<string, Monopoly.Type, int, bool>> fields = new List<Tuple<string, Type, int, bool>>();
         public Monopoly(string[] p, int v)
         {
             for (int i = 0; i < v; i++)
             {
-                players.Add(new Tuple<string,int>(p[i], 6000));     
+                players.Add(new Tuple<string,int>(p[i], startCash));     
             }
             fields.Add(new Tuple<string, Monopoly.Type, int, bool>("Ford", Monopoly.Type.AUTO, 0, false));
             fields.Add(new Tuple<string, Monopoly.Type, int, bool>("MCDonald", Monopoly.Type.FOOD, 0, false));
