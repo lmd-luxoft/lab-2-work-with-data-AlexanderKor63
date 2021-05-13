@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace nspMonopoly
+namespace Monopoly
 {
     [TestFixture]
     public class TestClass
@@ -38,23 +38,19 @@ namespace nspMonopoly
                     new Cell("MCDonald", new Monopoly_FOOD(), 0, false),
                     new Cell("TESLA",    new Monopoly_AUTO(), 0, false)
             };
-            //List<Cell> fields = new List<Cell>();
-
-            //fields.Add(new Cell("Ford", new Monopoly_AUTO(), 0, false));
-            //fields.Add(new Cell("MCDonald", new Monopoly_FOOD(), 0, false));
-            //fields.Add(new Cell("Lamoda", new Monopoly_CLOTHER(), 0, false));
-            //fields.Add(new Cell("Air Baltic", new Monopoly_TRAVEL(), 0, false));
-            //fields.Add(new Cell("Nordavia", new Monopoly_TRAVEL(), 0, false));
-            //fields.Add(new Cell("Prison", new Monopoly_PRISON(), 0, false));
-            //fields.Add(new Cell("MCDonald", new Monopoly_FOOD(), 0, false));
-            //fields.Add(new Cell("TESLA", new Monopoly_AUTO(), 0, false));
-
             string[] players = new string[] { "Peter", "Ekaterina", "Alexander" };
             Monopoly monopoly = new Monopoly(players);
             Cell[] actualCompanies = monopoly.GetFieldsList().ToArray();
-            //Cell[] expected = fields.ToArray();
-            Assert.AreEqual(expectedCompanies, actualCompanies);
+            Assert.IsTrue(cmpCellArray(expectedCompanies, actualCompanies));
         }
+
+        private bool cmpCellArray(Cell[] exp, Cell[] act) {
+            if (exp.Length != act.Length)       return false;
+            for(int i=0; i<exp.Length; ++i)
+                if (!exp[i].Equals(act[i]))      return false;
+            return true;
+        }
+
         [Test]
         public void PlayerBuyAUTO()
         {

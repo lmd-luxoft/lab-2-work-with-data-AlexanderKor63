@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
-namespace nspMonopoly
+namespace Monopoly
 {
+    [StructLayout(LayoutKind.Sequential)]
     struct Cell    {
         internal string Item1;           // Название компании
         internal MonopolyType Item2;     // Тип компании
@@ -16,7 +18,16 @@ namespace nspMonopoly
             Item3 = player;
             Item4 = flag;
         }
+        public override bool Equals(object obj) {
+            if (!(obj is Cell))                     return false;
+            Cell cell = (Cell)obj;
+            if (Item1 == cell.Item1 && Item3 == cell.Item3 && Item4 == cell.Item4
+                && Item2.GetType()==cell.Item2.GetType())  return true;
+            return false;
+        }
     }
+
+    [StructLayout(LayoutKind.Sequential)]
     struct Player    {
         internal string Item1;              // Имя
         internal int    Item2;              // Наличка
@@ -28,71 +39,59 @@ namespace nspMonopoly
     }
 
     abstract class MonopolyType {
-        internal virtual void FindRent(ref Player o, ref Player z)                      { }
-        internal virtual void FindCash(List<Player> players, int v, Cell k, Player x)   { }
+        internal abstract int Rent { get; }
+        internal abstract void FindRent(ref Player o, ref Player z);
+        internal abstract void FindCash(List<Player> players, int v, Cell k, Player x);
     }
-    abstract class MonopolySell    : MonopolyType { }
-    abstract class MonopolyNotSell : MonopolyType { }
 
-    class Monopoly_AUTO : MonopolySell {
+    abstract class MonopolySell    : MonopolyType {
+        internal abstract int Sell { get; }
         internal override void FindRent(ref Player o, ref Player z) {
-            z = new Player(z.Item1, z.Item2 - rent);
-            o = new Player(o.Item1, o.Item2 + rent);
+            z = new Player(z.Item1, z.Item2 - Rent);
+            o = new Player(o.Item1, o.Item2 + Rent);
         }
         internal override void FindCash(List<Player> players, int v, Cell k, Player x) {
-            if (k.Item3 == 0)  players[v-1] = new Player(x.Item1, x.Item2 - sell);
+            if (k.Item3 == 0) players[v - 1] = new Player(x.Item1, x.Item2 - Sell);
         }
+    }
+
+    abstract class MonopolyNotSell : MonopolyType {
+        internal override void FindRent(ref Player o, ref Player z) {
+            z = new Player(z.Item1, z.Item2 - Rent);
+        }
+        internal override void FindCash(List<Player> players, int v, Cell k, Player x) { }
+    }
+
+    class Monopoly_AUTO : MonopolySell {
+        internal override int Rent { get { return sell/2; } }
+        internal override int Sell { get { return sell; } }
         private const int sell = 500;
-        private const int rent = sell / 2;
     }
 
     class Monopoly_FOOD : MonopolySell {
-        internal override void FindRent(ref Player o, ref Player z) {
-            z = new Player(z.Item1, z.Item2 - rent);
-            o = new Player(o.Item1, o.Item2 + rent);
-        }
-        internal override void FindCash(List<Player> players, int v, Cell k, Player x) {
-            if (k.Item3 == 0) players[v-1] = new Player(x.Item1, x.Item2 - sell);
-        }
+        internal override int Rent { get { return sell / 2; } }
+        internal override int Sell { get { return sell; } }
         private const int sell = 250;
-        private const int rent = sell / 2;
     }
 
     class Monopoly_CLOTHER : MonopolySell {
-        internal override void FindRent(ref Player o, ref Player z) {
-            z = new Player(z.Item1, z.Item2 - rent);
-            o = new Player(o.Item1, o.Item2 + rent);
-        }
-        internal override void FindCash(List<Player> players, int v, Cell k, Player x) {
-            if (k.Item3 == 0) players[v - 1] = new Player(x.Item1, x.Item2 - sell);
-        }
+        internal override int Rent { get { return sell / 2; } }
+        internal override int Sell { get { return sell; } }
         private const int sell = 400;
-        private const int rent = sell / 2;
     }
 
     class Monopoly_TRAVEL : MonopolySell {
-        internal override void FindRent(ref Player o, ref Player z) {
-            z = new Player(z.Item1, z.Item2 - rent);
-            o = new Player(o.Item1, o.Item2 + rent);
-        }
-        internal override void FindCash(List<Player> players, int v, Cell k, Player x) {
-            if (k.Item3 == 0) players[v - 1] = new Player(x.Item1, x.Item2 - sell);
-        }
+        internal override int Rent { get { return sell / 2; } }
+        internal override int Sell { get { return sell; } }
         private const int sell = 800;
-        private const int rent = sell / 2;
     }
 
     class Monopoly_PRISON : MonopolyNotSell {
-        internal override void FindRent(ref Player o, ref Player z) {
-            z = new Player(z.Item1, z.Item2 - rent);
-        }
-        private const int rent = 1000;
+        internal override int Rent { get { return 1000; } }
     }
+
     class Monopoly_BANK : MonopolyNotSell {
-        internal override void FindRent(ref Player o, ref Player z) {
-            z = new Player(z.Item1, z.Item2 - rent);
-        }
-        private const int rent = 700;
+        internal override int Rent { get { return 700; } }
     }
 
     class Monopoly
